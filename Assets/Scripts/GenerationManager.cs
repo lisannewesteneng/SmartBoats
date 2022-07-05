@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -17,6 +17,8 @@ public class GenerationManager : MonoBehaviour
 
     [Space(10)]
     [Header("Parenting and Mutation")]
+    [SerializeField]
+    private bool geneticAlgorithm;
     [SerializeField]
     private float mutationFactor;
     [SerializeField] 
@@ -57,17 +59,57 @@ public class GenerationManager : MonoBehaviour
     private BoatLogic[] _boatParents;
     private PirateLogic[] _pirateParents;
 
+    [Header("Data Export")]
+    private CSVWriter writer;
+
+    private Random random;
+    private Random genRandom;
+    private int seed = 1;
+
     private void Awake()
     {
-        Random.InitState(6);
+        //Random.InitState(6);
+        random = new Random();
+        genRandom = new Random();
+
+        int r1 = random.Next();
+        int r2 = random.Next();
+        int r3 = random.Next();
+        Debug.Log("random numbers: " + r1 + ", " + r2 + ", " + r3);
+
+        for (int i=0; i < 3; i++)
+        {
+            printDouble(random.NextDouble());
+        }
+
+        double d1 = random.NextDouble();
+        double d2 = random.NextDouble();
+        double d3 = random.NextDouble();
+
+        Debug.Log("random double numbers: " + d1 + ", " + d2 + ", " + d3);
+    }
+
+    private void printDouble(double d)
+    {
+        Debug.Log("print double: " + d);
     }
 
     private void Start()
     {
+        if (geneticAlgorithm)
+        {
+            savePrefabsAt = "Assets/Prefabs/GeneticSavedGeneration/";
+        }
+        else savePrefabsAt = "Assets/Prefabs/SavedGeneration/";
+
+
         if (runOnStart)
         {
             StartSimulation();
         }
+
+        writer = GetComponent<CSVWriter>();
+        writer.BeginFile(geneticAlgorithm, mutationFactor, mutationChance, boatParentSize, pirateParentSize);
     }
     
     private void Update()
@@ -128,8 +170,20 @@ public class GenerationManager : MonoBehaviour
                 _activePirates.Add(pirate);
                 if (pirateParents != null)
                 {
-                    PirateLogic pirateParent = pirateParents[Random.Range(0, pirateParents.Length)];
-                    pirate.Birth(pirateParent.GetData());
+                    if (geneticAlgorithm)
+                    {
+                        // Two parents
+                        PirateLogic[] parents = GetTwoDifferentParents(pirateParents);
+                        pirate.Birth(parents[0].GetData(), parents[1].GetData());
+                    }
+                    else
+                    {
+                        // One parent
+                        //int index = Random.Range(0, pirateParents.Length);
+                        int index = genRandom.Next(0, pirateParents.Length);
+                        PirateLogic pirateParent = pirateParents[index];
+                        pirate.Birth(pirateParent.GetData());
+                    }
                 }
 
                 pirate.Mutate(mutationFactor, mutationChance);
@@ -138,12 +192,13 @@ public class GenerationManager : MonoBehaviour
         }
     }
 
-     /// <summary>
-     /// Generates the list of boats using the parents list. The parent list can be null and, if so, it will be ignored.
-     /// Newly created boats will go under mutation (MutationChances and MutationFactor will be applied).
-     /// /// Newly create agents will be Awaken (calling AwakeUp()).
-     /// </summary>
-     /// <param name="boatParents"></param>
+
+    /// <summary>
+    /// Generates the list of boats using the parents list. The parent list can be null and, if so, it will be ignored.
+    /// Newly created boats will go under mutation (MutationChances and MutationFactor will be applied).
+    /// /// Newly create agents will be Awaken (calling AwakeUp()).
+    /// </summary>
+    /// <param name="boatParents"></param>
     private void GenerateBoats(BoatLogic[] boatParents)
     {
         _activeBoats = new List<BoatLogic>();
@@ -156,8 +211,19 @@ public class GenerationManager : MonoBehaviour
                 _activeBoats.Add(boat);
                 if (boatParents != null)
                 {
-                    BoatLogic boatParent = boatParents[Random.Range(0, boatParents.Length)];
-                    boat.Birth(boatParent.GetData());
+                    if (geneticAlgorithm)
+                    {
+                        // Two parents
+                        BoatLogic[] parents = GetTwoDifferentParents(boatParents);
+                        boat.Birth(parents[0].GetData(), parents[1].GetData());
+                    }
+                    else
+                    {
+                        // One parent
+                        //BoatLogic boatParent = boatParents[Random.Range(0, boatParents.Length)];
+                        BoatLogic boatParent = boatParents[genRandom.Next(0, boatParents.Length)];
+                        boat.Birth(boatParent.GetData());
+                    }
                 }
 
                 boat.Mutate(mutationFactor, mutationChance);
@@ -211,6 +277,7 @@ public class GenerationManager : MonoBehaviour
         
         //Winners:
         Debug.Log("Last winner boat had: " + lastBoatWinner.GetPoints() + " points!" + " Last winner pirate had: " + lastPirateWinner.GetPoints() + " points!");
+        writer.WriteData(generationCount, lastBoatWinner.GetPoints(), lastPirateWinner.GetPoints());
         
         GenerateObjects(_boatParents, _pirateParents);
     }
@@ -248,5 +315,39 @@ public class GenerationManager : MonoBehaviour
         _activeBoats.RemoveAll(item => item == null);
         _activeBoats.ForEach(boat => boat.Sleep());
         _activePirates.ForEach(pirate => pirate.Sleep());
+    }
+
+    private BoatLogic[] GetTwoDifferentParents(BoatLogic[] parentList)
+    {
+        BoatLogic[] parents = new BoatLogic[2];
+        //parents[0] = parentList[Random.Range(0, parentList.Length)];
+        //parents[1] = parentList[Random.Range(0, parentList.Length)];
+
+        parents[0] = parentList[genRandom.Next(0, parentList.Length)];
+        parents[1] = parentList[genRandom.Next(0, parentList.Length)];
+
+        if (parents[0] == parents[1])
+        {
+            parents = GetTwoDifferentParents(parentList);
+        }
+
+        return parents;
+    }
+
+    private PirateLogic[] GetTwoDifferentParents(PirateLogic[] parentList)
+    {
+        PirateLogic[] parents = new PirateLogic[2];
+        //parents[0] = parentList[Random.Range(0, parentList.Length)];
+        //parents[1] = parentList[Random.Range(0, parentList.Length)];
+
+        parents[0] = parentList[genRandom.Next(0, parentList.Length)];
+        parents[1] = parentList[genRandom.Next(0, parentList.Length)];
+
+        if (parents[0] == parents[1])
+        {
+            parents = GetTwoDifferentParents(parentList);
+        }
+
+        return parents;
     }
 }

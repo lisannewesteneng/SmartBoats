@@ -1,0 +1,8 @@
+General settings: ; ; 
+Genetic Algorithm:;False
+MutationFactor:;3,5
+Mutation Chance:;35
+Boat Parent Size:;5
+Pirate Parent Size:;2
+
+Generation;Boat points;Pirate points

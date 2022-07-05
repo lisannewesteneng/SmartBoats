@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -166,6 +166,51 @@ public class AgentLogic : MonoBehaviour, IComparable
         boatDistanceFactor = parent.boatDistanceFactor;
         enemyWeight = parent.enemyWeight;
         enemyDistanceFactor = parent.enemyDistanceFactor;
+
+        Debug.Log("Steps: " + steps + ", RayRadius: " + rayRadius);
+    }
+
+    /// <summary>
+    /// Copies a mix of the genes / weights from both parents.
+    /// </summary>
+    /// <param name="parent1"></param>
+    /// <param name="parent2"></param>
+    public void Birth(AgentData parent1, AgentData parent2)
+    {
+        int threshold = birthRandom.Next(1, 11); //Random.Range(1, 11);
+        AgentData parent = parent1;
+
+        steps = parent.steps;
+
+        if (threshold < 2) parent = parent2;
+        rayRadius = parent.rayRadius;
+
+        if (threshold < 3) parent = parent2;
+        sight = parent.sight;
+
+        if (threshold < 4) parent = parent2;
+        movingSpeed = parent.movingSpeed;
+
+        if (threshold < 5) parent = parent2;
+        randomDirectionValue = parent.randomDirectionValue;
+
+        if (threshold < 6) parent = parent2;
+        boxWeight = parent.boxWeight;
+
+        if (threshold < 7) parent = parent2;
+        distanceFactor = parent.distanceFactor;
+
+        if (threshold < 8) parent = parent2;
+        boatWeight = parent.boatWeight;
+
+        if (threshold < 9) parent = parent2;
+        boatDistanceFactor = parent.boatDistanceFactor;
+
+        if (threshold < 10) parent = parent2;
+        enemyWeight = parent.enemyWeight;
+
+        parent = parent2;
+        enemyDistanceFactor = parent.enemyDistanceFactor;
     }
 
     /// <summary>
@@ -174,7 +219,9 @@ public class AgentLogic : MonoBehaviour, IComparable
     /// </summary>
     /// <param name="mutationFactor">How much a gene / weight can change (-mutationFactor, +mutationFactor)</param>
     /// <param name="mutationChance">Chance of a mutation happening per gene / weight.</param>
-    public void Mutate(float mutationFactor, float mutationChance)
+    
+    /*
+    public void MutateZ(float mutationFactor, float mutationChance)
     {
         if (Random.Range(0.0f, 100.0f) <= mutationChance)
         {
@@ -241,6 +288,84 @@ public class AgentLogic : MonoBehaviour, IComparable
             enemyDistanceFactor += Random.Range(-mutationFactor, +mutationFactor);
         }
     }
+    */
+
+    public void Mutate(float mutationFactor, float mutationChance)
+    {
+
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            double rand = random.NextDouble();
+            Debug.Log("passing in: " + rand);
+            float change = RandomFloat(-mutationFactor, +mutationFactor, rand);
+            int changeInt = (int)change;
+            Debug.Log("Change float: " + change);
+            Debug.Log("Change int: " + changeInt);
+            steps += changeInt;
+            steps = (int)Mathf.Max(steps, _minimalSteps);
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            rayRadius += (int)RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+            rayRadius = (int)Mathf.Max(rayRadius, _minimalRayRadius);
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            float sightIncrease = RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+            sight += sightIncrease;
+            sight = Mathf.Max(sight, _minimalSight);
+            if (sightIncrease > 0.0f)
+            {
+                movingSpeed -= sightIncrease * _sightInfluenceInSpeed;
+                movingSpeed = Mathf.Max(movingSpeed, _minimalMovingSpeed);
+            }
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            float movingSpeedIncrease = RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+            movingSpeed += movingSpeedIncrease;
+            movingSpeed = Mathf.Max(movingSpeed, _minimalMovingSpeed);
+            if (movingSpeedIncrease > 0.0f)
+            {
+                sight -= movingSpeedIncrease * _speedInfluenceInSight;
+                sight = Mathf.Max(sight, _minimalSight);
+            }
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            randomDirectionValue.x += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            randomDirectionValue.y += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            boxWeight += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            distanceFactor += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            boatWeight += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            boatDistanceFactor += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            enemyWeight += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+        if (random.NextDouble() * 100 <= mutationChance)
+        {
+            enemyDistanceFactor += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
+        }
+    }
+
+
 
     private void Update()
     {
