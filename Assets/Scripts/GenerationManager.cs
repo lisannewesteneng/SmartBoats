@@ -20,6 +20,8 @@ public class GenerationManager : MonoBehaviour
     [SerializeField]
     private bool geneticAlgorithm;
     [SerializeField]
+    private bool uniformCrossover;
+    [SerializeField]
     private float mutationFactor;
     [SerializeField] 
     private float mutationChance;
@@ -62,36 +64,9 @@ public class GenerationManager : MonoBehaviour
     [Header("Data Export")]
     private CSVWriter writer;
 
-    private Random random;
-    private Random genRandom;
-    private int seed = 1;
-
     private void Awake()
     {
-        //Random.InitState(6);
-        random = new Random();
-        genRandom = new Random();
-
-        int r1 = random.Next();
-        int r2 = random.Next();
-        int r3 = random.Next();
-        Debug.Log("random numbers: " + r1 + ", " + r2 + ", " + r3);
-
-        for (int i=0; i < 3; i++)
-        {
-            printDouble(random.NextDouble());
-        }
-
-        double d1 = random.NextDouble();
-        double d2 = random.NextDouble();
-        double d3 = random.NextDouble();
-
-        Debug.Log("random double numbers: " + d1 + ", " + d2 + ", " + d3);
-    }
-
-    private void printDouble(double d)
-    {
-        Debug.Log("print double: " + d);
+        Random.InitState(6);
     }
 
     private void Start()
@@ -109,7 +84,7 @@ public class GenerationManager : MonoBehaviour
         }
 
         writer = GetComponent<CSVWriter>();
-        writer.BeginFile(geneticAlgorithm, mutationFactor, mutationChance, boatParentSize, pirateParentSize);
+        writer.BeginFile(geneticAlgorithm,uniformCrossover, mutationFactor, mutationChance, boatParentSize, pirateParentSize, simulationTimer);
     }
     
     private void Update()
@@ -174,14 +149,12 @@ public class GenerationManager : MonoBehaviour
                     {
                         // Two parents
                         PirateLogic[] parents = GetTwoDifferentParents(pirateParents);
-                        pirate.Birth(parents[0].GetData(), parents[1].GetData());
+                        pirate.Birth(parents[0].GetData(), parents[1].GetData(), uniformCrossover);
                     }
                     else
                     {
                         // One parent
-                        //int index = Random.Range(0, pirateParents.Length);
-                        int index = genRandom.Next(0, pirateParents.Length);
-                        PirateLogic pirateParent = pirateParents[index];
+                        PirateLogic pirateParent = pirateParents[Random.Range(0, pirateParents.Length)];
                         pirate.Birth(pirateParent.GetData());
                     }
                 }
@@ -215,13 +188,12 @@ public class GenerationManager : MonoBehaviour
                     {
                         // Two parents
                         BoatLogic[] parents = GetTwoDifferentParents(boatParents);
-                        boat.Birth(parents[0].GetData(), parents[1].GetData());
+                        boat.Birth(parents[0].GetData(), parents[1].GetData(), uniformCrossover);
                     }
                     else
                     {
                         // One parent
-                        //BoatLogic boatParent = boatParents[Random.Range(0, boatParents.Length)];
-                        BoatLogic boatParent = boatParents[genRandom.Next(0, boatParents.Length)];
+                        BoatLogic boatParent = boatParents[Random.Range(0, boatParents.Length)];
                         boat.Birth(boatParent.GetData());
                     }
                 }
@@ -320,11 +292,9 @@ public class GenerationManager : MonoBehaviour
     private BoatLogic[] GetTwoDifferentParents(BoatLogic[] parentList)
     {
         BoatLogic[] parents = new BoatLogic[2];
-        //parents[0] = parentList[Random.Range(0, parentList.Length)];
-        //parents[1] = parentList[Random.Range(0, parentList.Length)];
+        parents[0] = parentList[Random.Range(0, parentList.Length)];
+        parents[1] = parentList[Random.Range(0, parentList.Length)];
 
-        parents[0] = parentList[genRandom.Next(0, parentList.Length)];
-        parents[1] = parentList[genRandom.Next(0, parentList.Length)];
 
         if (parents[0] == parents[1])
         {
@@ -337,11 +307,9 @@ public class GenerationManager : MonoBehaviour
     private PirateLogic[] GetTwoDifferentParents(PirateLogic[] parentList)
     {
         PirateLogic[] parents = new PirateLogic[2];
-        //parents[0] = parentList[Random.Range(0, parentList.Length)];
-        //parents[1] = parentList[Random.Range(0, parentList.Length)];
+        parents[0] = parentList[Random.Range(0, parentList.Length)];
+        parents[1] = parentList[Random.Range(0, parentList.Length)];
 
-        parents[0] = parentList[genRandom.Next(0, parentList.Length)];
-        parents[1] = parentList[genRandom.Next(0, parentList.Length)];
 
         if (parents[0] == parents[1])
         {

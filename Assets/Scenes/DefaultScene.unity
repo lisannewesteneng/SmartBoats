@@ -33138,7 +33138,8 @@ MonoBehaviour:
   - {fileID: 1204097874}
   boatGenerator: {fileID: 1829776929}
   pirateGenerator: {fileID: 1003293718}
-  geneticAlgorithm: 0
+  geneticAlgorithm: 1
+  uniformCrossover: 1
   mutationFactor: 3.5
   mutationChance: 35
   boatParentSize: 5

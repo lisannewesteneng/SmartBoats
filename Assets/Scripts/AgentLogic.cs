@@ -166,8 +166,6 @@ public class AgentLogic : MonoBehaviour, IComparable
         boatDistanceFactor = parent.boatDistanceFactor;
         enemyWeight = parent.enemyWeight;
         enemyDistanceFactor = parent.enemyDistanceFactor;
-
-        Debug.Log("Steps: " + steps + ", RayRadius: " + rayRadius);
     }
 
     /// <summary>
@@ -175,42 +173,67 @@ public class AgentLogic : MonoBehaviour, IComparable
     /// </summary>
     /// <param name="parent1"></param>
     /// <param name="parent2"></param>
-    public void Birth(AgentData parent1, AgentData parent2)
+    public void Birth(AgentData parent1, AgentData parent2, bool uniform=false)
     {
-        int threshold = birthRandom.Next(1, 11); //Random.Range(1, 11);
+        if (uniform) UniformCrossover(parent1, parent2);
+        else OnePointCrossover(parent1, parent2);
+    }
+
+    private void OnePointCrossover(AgentData parent1, AgentData parent2)
+    {
+        int crossoverPoint = Random.Range(1, 11);
+        Debug.Log("Crossover at " + crossoverPoint);
+
         AgentData parent = parent1;
 
         steps = parent.steps;
 
-        if (threshold < 2) parent = parent2;
+        if (crossoverPoint < 2) parent = parent2;
         rayRadius = parent.rayRadius;
 
-        if (threshold < 3) parent = parent2;
+        if (crossoverPoint < 3) parent = parent2;
         sight = parent.sight;
 
-        if (threshold < 4) parent = parent2;
+        if (crossoverPoint < 4) parent = parent2;
         movingSpeed = parent.movingSpeed;
 
-        if (threshold < 5) parent = parent2;
+        if (crossoverPoint < 5) parent = parent2;
         randomDirectionValue = parent.randomDirectionValue;
 
-        if (threshold < 6) parent = parent2;
+        if (crossoverPoint < 6) parent = parent2;
         boxWeight = parent.boxWeight;
 
-        if (threshold < 7) parent = parent2;
+        if (crossoverPoint < 7) parent = parent2;
         distanceFactor = parent.distanceFactor;
 
-        if (threshold < 8) parent = parent2;
+        if (crossoverPoint < 8) parent = parent2;
         boatWeight = parent.boatWeight;
 
-        if (threshold < 9) parent = parent2;
+        if (crossoverPoint < 9) parent = parent2;
         boatDistanceFactor = parent.boatDistanceFactor;
 
-        if (threshold < 10) parent = parent2;
+        if (crossoverPoint < 10) parent = parent2;
         enemyWeight = parent.enemyWeight;
 
         parent = parent2;
         enemyDistanceFactor = parent.enemyDistanceFactor;
+    }
+
+    private void UniformCrossover(AgentData parent1, AgentData parent2)
+    {
+        AgentData[] parents = new AgentData[] { parent1, parent2 };
+
+        steps = parents[Random.Range(0, 2)].steps;
+        rayRadius = parents[Random.Range(0, 2)].rayRadius;
+        sight = parents[Random.Range(0, 2)].sight;
+        movingSpeed = parents[Random.Range(0, 2)].movingSpeed;
+        randomDirectionValue = parents[Random.Range(0, 2)].randomDirectionValue;
+        boxWeight = parents[Random.Range(0, 2)].boxWeight;
+        distanceFactor = parents[Random.Range(0, 2)].distanceFactor;
+        boatWeight = parents[Random.Range(0, 2)].boatWeight;
+        boatDistanceFactor = parents[Random.Range(0, 2)].boatDistanceFactor;
+        enemyWeight = parents[Random.Range(0, 2)].enemyWeight;
+        enemyDistanceFactor = parents[Random.Range(0, 2)].enemyDistanceFactor;
     }
 
     /// <summary>
@@ -219,9 +242,7 @@ public class AgentLogic : MonoBehaviour, IComparable
     /// </summary>
     /// <param name="mutationFactor">How much a gene / weight can change (-mutationFactor, +mutationFactor)</param>
     /// <param name="mutationChance">Chance of a mutation happening per gene / weight.</param>
-    
-    /*
-    public void MutateZ(float mutationFactor, float mutationChance)
+    public void Mutate(float mutationFactor, float mutationChance)
     {
         if (Random.Range(0.0f, 100.0f) <= mutationChance)
         {
@@ -288,8 +309,8 @@ public class AgentLogic : MonoBehaviour, IComparable
             enemyDistanceFactor += Random.Range(-mutationFactor, +mutationFactor);
         }
     }
-    */
 
+    /*
     public void Mutate(float mutationFactor, float mutationChance)
     {
 
@@ -364,7 +385,7 @@ public class AgentLogic : MonoBehaviour, IComparable
             enemyDistanceFactor += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
         }
     }
-
+    */
 
 
     private void Update()
