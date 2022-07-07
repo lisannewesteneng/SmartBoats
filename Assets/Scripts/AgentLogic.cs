@@ -182,7 +182,6 @@ public class AgentLogic : MonoBehaviour, IComparable
     private void OnePointCrossover(AgentData parent1, AgentData parent2)
     {
         int crossoverPoint = Random.Range(1, 11);
-        Debug.Log("Crossover at " + crossoverPoint);
 
         AgentData parent = parent1;
 
@@ -309,83 +308,6 @@ public class AgentLogic : MonoBehaviour, IComparable
             enemyDistanceFactor += Random.Range(-mutationFactor, +mutationFactor);
         }
     }
-
-    /*
-    public void Mutate(float mutationFactor, float mutationChance)
-    {
-
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            double rand = random.NextDouble();
-            Debug.Log("passing in: " + rand);
-            float change = RandomFloat(-mutationFactor, +mutationFactor, rand);
-            int changeInt = (int)change;
-            Debug.Log("Change float: " + change);
-            Debug.Log("Change int: " + changeInt);
-            steps += changeInt;
-            steps = (int)Mathf.Max(steps, _minimalSteps);
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            rayRadius += (int)RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-            rayRadius = (int)Mathf.Max(rayRadius, _minimalRayRadius);
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            float sightIncrease = RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-            sight += sightIncrease;
-            sight = Mathf.Max(sight, _minimalSight);
-            if (sightIncrease > 0.0f)
-            {
-                movingSpeed -= sightIncrease * _sightInfluenceInSpeed;
-                movingSpeed = Mathf.Max(movingSpeed, _minimalMovingSpeed);
-            }
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            float movingSpeedIncrease = RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-            movingSpeed += movingSpeedIncrease;
-            movingSpeed = Mathf.Max(movingSpeed, _minimalMovingSpeed);
-            if (movingSpeedIncrease > 0.0f)
-            {
-                sight -= movingSpeedIncrease * _speedInfluenceInSight;
-                sight = Mathf.Max(sight, _minimalSight);
-            }
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            randomDirectionValue.x += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            randomDirectionValue.y += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            boxWeight += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            distanceFactor += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            boatWeight += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            boatDistanceFactor += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            enemyWeight += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-        if (random.NextDouble() * 100 <= mutationChance)
-        {
-            enemyDistanceFactor += RandomFloat(-mutationFactor, +mutationFactor, random.NextDouble());
-        }
-    }
-    */
 
 
     private void Update()

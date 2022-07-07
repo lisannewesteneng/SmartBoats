@@ -11,7 +11,7 @@ public class CSVWriter : MonoBehaviour
 
     void Awake()
     {
-        filename = Application.dataPath + "/test.csv";
+        filename = Application.dataPath + "/data.csv";
     }
 
     void Update()
